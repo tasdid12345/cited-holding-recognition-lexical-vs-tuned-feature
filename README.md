@@ -24,6 +24,30 @@ python analysis.py
 ## Results
 Results are written to `results.json` (and a chart to `figures/`) when the script runs.
 
+## Results (latest run)
+
+On CaseHOLD (LexGLUE) with 2,000 test rows, a tuned LightGBM model on richer lexical-similarity features reached 61.7% 5-way accuracy versus 56.4% for a standard n-gram TF-IDF similarity matcher (61.0% vs 52.4% on low-overlap cases), a modest single-subsample gain.
+
+| Metric | Value |
+|---|---|
+| baseline_score | 0.564 |
+| baseline_score_std | 0 |
+| baseline_f1 | 0.7275 |
+| baseline_f1_std | 0 |
+| baseline_low_overlap_acc | 0.5238 |
+| improved_score | 0.6167 |
+| improved_score_std | 0.0006236 |
+| improved_f1 | 0.7604 |
+| improved_f1_std | 0.0003898 |
+| improved_low_overlap_acc | 0.6099 |
+| improvement | 0.05267 |
+| improvement_low_overlap | 0.0861 |
+| chance_accuracy | 0.2 |
+
+Run on 2026-10-11. Full output: [results.json](results.json) · [run.log](run.log)
+
+Notes: Data source repo: coastalcph/lex_glue. Train subsampled from the first parquet shard of the train split. Seeds [42, 43, 44]; baseline is deterministic so its std is ~0. Low-overlap subset = test third with lowest max candidate-token overlap with the passage (label-free). Macro-F1 is over binary correct/incorrect candidate rows, predicting 1 for the chosen candidate. Best baseline params {'C': 0.1}; best LightGBM params {'num_leaves': 7, 'n_estimators': 150, 'min_child_samples': 50, 'learning_rate': 0.1}. Single subsample, so differences of ~1-2 points are within sampling noise (n_test=2000). Runtime 64s.
+
 ## Reference
 
 This project is motivated by the following paper:
