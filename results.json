@@ -1,0 +1,33 @@
+{
+  "question": "Can a tuned gradient-boosting model on richer lexical-similarity features match the correct cited legal holding to a citing passage more accurately than a standard n-gram overlap baseline, including when wording overlap is low?",
+  "method": "CaseHOLD (LexGLUE) official train/test splits subsampled; both models pick the top-scoring of 5 candidate holdings; hyper-parameters tuned by 3-fold CV on training passages only; test used once.",
+  "dataset": {
+    "name": "CaseHOLD (LexGLUE case_hold)",
+    "source_url": "https://huggingface.co/datasets/coastalcph/lex_glue",
+    "n_rows": 8000,
+    "n_train": 6000,
+    "n_test": 2000,
+    "same_as_paper": false,
+    "baseline_is_papers_method": false
+  },
+  "metric_name": "5-way accuracy of picking the correct holding",
+  "higher_is_better": true,
+  "baseline": "Word 1-2-gram TF-IDF cosine between passage and candidate, logistic regression on that single score, top candidate chosen.",
+  "improved": "LightGBM binary classifier on word/char n-gram cosines, BM25, rare-term overlap, overlap/length features and each candidate's score relative to the other four; params tuned by CV.",
+  "metrics": {
+    "baseline_score": 0.564,
+    "baseline_score_std": 0.0,
+    "baseline_f1": 0.7275,
+    "baseline_f1_std": 0.0,
+    "baseline_low_overlap_acc": 0.5238095238095238,
+    "improved_score": 0.6166666666666667,
+    "improved_score_std": 0.0006236095644623438,
+    "improved_f1": 0.7604166666666666,
+    "improved_f1_std": 0.0003897559777889736,
+    "improved_low_overlap_acc": 0.6099086099086098,
+    "improvement": 0.05266666666666675,
+    "improvement_low_overlap": 0.08609908609908601,
+    "chance_accuracy": 0.2
+  },
+  "notes": "Data source repo: coastalcph/lex_glue. Train subsampled from the first parquet shard of the train split. Seeds [42, 43, 44]; baseline is deterministic so its std is ~0. Low-overlap subset = test third with lowest max candidate-token overlap with the passage (label-free). Macro-F1 is over binary correct/incorrect candidate rows, predicting 1 for the chosen candidate. Best baseline params {'C': 0.1}; best LightGBM params {'num_leaves': 7, 'n_estimators': 150, 'min_child_samples': 50, 'learning_rate': 0.1}. Single subsample, so differences of ~1-2 points are within sampling noise (n_test=2000). Runtime 64s."
+}
